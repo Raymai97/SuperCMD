@@ -28,14 +28,14 @@
 
 <p>The problem with that is, most people forget or have no idea how to restore back the NTFS permission after they're done. The worse is, some of them don't even know what they're doing, they just simply click on the "Grant all permission", thinking that would resolve anything that comes into their way.</p>
 
-<p>This would render NTFS and UAC useless.</p>
+<p>This would render the security feature of NTFS and UAC useless.</p>
 
 <p>But restoring NTFS permission is so tedious, so what is the alternative?</p>
 
 <h3>
 <a id="lets-be-the-trustedinstaller" class="anchor" href="#lets-be-the-trustedinstaller" aria-hidden="true"><span class="octicon octicon-link"></span></a>Let's be the TrustedInstaller</h3>
 
-<p>Even wonder how Windows Update updates system files without hassle? The answer is, TrustedInstaller. TrustedInstaller, also known as Windows Modules Installer, is a Windows service that has the power to update system files. It can access anything on the system partition, because it is running on SYSTEM user which has the highest privileges.</p>
+<p>Ever wonder how Windows Update updates system files without hassle? The answer is, TrustedInstaller. TrustedInstaller, also known as Windows Modules Installer, is a Windows service that has the power to update system files. It can access anything on the system partition, because it is running on SYSTEM user which has the highest privileges.</p>
 
 <p>SuperCMD allows you to run your program as SYSTEM with TrustedInstaller token. Yes, your program will be as powerful as TrustedInstaller is, capable to modify whatever TrustedInstaller can, without changing anything related to NTFS permission.</p>
 
