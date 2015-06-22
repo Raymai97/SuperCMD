@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--For new line, type \n.-->
+<SuperCMD_Lang Name="en-US" DispName="English">
+	<Common
+		BadOS="SuperCMD only runs on Windows Vista or newer operating system!"
+		APICallFailed="Win32 API call failed!\n\n%1"
+		CantGetPID="Can't get the PID of: %1"
+		FileNotFound="This is not an existing file!\n\n%1"
+		FileNotExe="This is not a program!\n\n%1"
+		FileType_LNK="Windows Shortcut"
+		FileType_EXE="Executable files"
+		CreateLnkOK="Shortcut has been created successfully!"
+		CreateLnkFailed="Failed to create shortcut!"
+		StartingTI="Starting TrustedInstaller service...\n\nPlease wait..."
+		CantStartTI="Unable to start TrustedInstaller service!"
+		UseTIToken="Use TrustedInstaller token!"
+		AskToRestart="Some settings demand a restart to take effect.\n\nDo you want to restart SuperCMD now?"
+		AskToResetQbtn="Do you really want to reset Quick Launch?\n\nThis action can't be undo!"
+		AskToNameQbtn="Please name this button first."
+		SaveSettingsFailed="Failed to save program settings."
+		Error_title="Error!"
+		OK_title="Succeeded!"
+		SureBo_title="Are you sure?"
+	/>
+	<ContextMenuIntegration
+		RunAsSYSTEM="Run as S&amp;YSTEM"
+		RunAsSYSTEM_TI="Run as S&amp;YSTEM (TI)"
+	/>
+  <frmMain
+		grpQLaunch="Quick Launch"
+		lblQRightClick="Right click to edit."
+		lnkResetQ="Reset"
+		grpOneKey="OneKey"
+		btnSelectAndRun="Select a program and run as SYSTEM"
+		grpAdvanced="Advanced"
+		lblProgramPath="Program path: "
+		lblArguments="Arguments: "
+		grpWorkingDir="Working directory: "
+		rdoAutoWorkingDir="Auto"
+		btnRunAdvanced="Run!"
+	/>
+  <frmQEditor
+		TITLE="Edit Quick Launch item"
+		lblName="Name: "
+		lblProgramPath="Program path: "
+		lblArguments="Arguments: "
+		grpWorkingDir="Working directory: "
+		rdoAutoWorkingDir="Auto"
+		btnOK="OK"
+		btnCancel="Cancel"
+	/>
+  <mnuQEdit
+		cmiCopy="Copy"
+		cmiCopyAsText="Copy as text"
+		cmiPaste="Paste"
+		cmiClearAll="Clear"
+		cmiCreateLnk="Create shortcut"
+	/>
+  <frmConfig
+		grpCMIntegration="Context Menu Integration"
+		chkRunAsSYSTEM="Run as SYSTEM"
+		chkRunAsSYSTEM_TI="Run as SYSTEM (TI)"
+		grpMisc="Misc"
+		chkBeDPIaware="Be DPI aware"
+		chkBeClassic="Use Win3.1 UI"
+		grpLang="Language"
+		lblWarning="This program is intended for personal use only.\nDon't use it for malicious purpose!"
+		btnOK="OK"
+		btnCancel="Cancel"
+	/>
+</SuperCMD_Lang>

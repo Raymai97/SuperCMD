@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SuperCMD DPIaware="True" W31UI="True" Lang="en-US">
+  <QLaunch>
+    <Q index="1" name="Command Prompt" exe="%windir%\System32\cmd.exe" args="/k Title SuperCMD v2.0" />
+    <Q index="2" name="Registry Editor" exe="%windir%\regedit.exe" />
+    <Q index="3" name="Task Manager" exe="%windir%\System32\taskmgr.exe" />
+    <Q index="4" name="Services" exe="%windir%\System32\mmc.exe" args="%windir%\System32\services.msc" />
+    <Q index="5" />
+    <Q index="6" />
+    <Q index="7" />
+    <Q index="8" />
+    <Q index="9" />
+  </QLaunch>
+</SuperCMD>
