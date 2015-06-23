@@ -1,4 +1,4 @@
-﻿// SuperCMD v2.0 by MaiSoft (Raymai97)
+﻿// SuperCMD v2.1 by MaiSoft (Raymai97)
 
 using System;
 using System.Collections.Generic;
@@ -13,8 +13,8 @@ namespace SuperCMD
 {
 	static class Program
 	{
-		public static string Title = "SuperCMD v2.0";
-		public static string Ver = "2.0";
+		public static string Title = "SuperCMD v2.1";
+		public static string Ver = "2.1";
 		public static string DirPath = Path.GetDirectoryName(Application.ExecutablePath);
 		public static string SettingsPath = DirPath + "\\settings.xml";
 		public static string MUIDirPath = Program.DirPath + "\\MUI";
@@ -27,10 +27,14 @@ namespace SuperCMD
 		public static bool beClassic = true;
 		// In case user prefer DPI virtualization
 		public static bool beDPIaware = true;
+		// Can be enabled via /Debug argument
+		public static bool DebugMode = false;
 
 		// Prevent someone messes with my EXE when it's running
 		static FileStream myStream = 
 			new FileStream(Application.ExecutablePath, FileMode.Open, FileAccess.Read);
+		// If not IntPtr.Zero, will not show Complain but will SendMessage() to it
+		static IntPtr hLogTarget = IntPtr.Zero;
 
 		/// <summary>
 		/// The main entry point for the application.
@@ -38,8 +42,6 @@ namespace SuperCMD
 		[STAThread]
 		static void Main(string[] args)
 		{
-			// Init Qs[]
-			for (int i = 0; i <= 8; i++) Qs[i] = new Q();
 			// Load default settings if settings.xml can't be loaded
 			try
 			{
@@ -90,40 +92,49 @@ namespace SuperCMD
 			LastComplain = msg;
 		}
 
-		public static void LoadSettings(string xmlText)
+		public static bool LoadSettings(string xmlText)
 		{
-			XmlDocument xmlDoc = new XmlDocument();
-			xmlDoc.LoadXml(xmlText);
-			XmlNode root = xmlDoc.SelectSingleNode("SuperCMD");
-			foreach (XmlAttribute attr in root.Attributes)
+			try
 			{
-				string attrName = attr.Name.ToLower();
-				if (attrName == "dpiaware") Program.beDPIaware = bool.Parse(attr.Value);
-				if (attrName == "w31ui") Program.beClassic = bool.Parse(attr.Value);
-				if (attrName == "lang")
-				{
-					if (!MUI.TrySetLangByName(attr.Value)) RevertFallbackLangFrom(attr.Value);
-				}
-			}
-			XmlNodeList Q_nodes = root.SelectNodes("QLaunch/Q");
-			int max = (Q_nodes.Count > 9) ? 9 : Q_nodes.Count;
-			for (int i = 1; i <= max; i++)
-			{
-				XmlNode Q_node = Q_nodes[i - 1];
-				Q q = Qs[int.Parse(Q_node.Attributes["index"].Value) - 1];
-				foreach (XmlAttribute attr in Q_node.Attributes)
+				XmlDocument xmlDoc = new XmlDocument();
+				xmlDoc.LoadXml(xmlText);
+				XmlNode root = xmlDoc.SelectSingleNode("SuperCMD");
+				foreach (XmlAttribute attr in root.Attributes)
 				{
 					string attrName = attr.Name.ToLower();
-					if (attrName == "name") q.Name = attr.Value;
-					if (attrName == "exe") q.ExeToRun = attr.Value;
-					if (attrName == "args") q.Arguments = attr.Value;
-					if (attrName == "dir") q.WorkingDir = attr.Value;
-					if (attrName == "ti") q.UseTItoken = bool.Parse(attr.Value);
+					if (attrName == "dpiaware") Program.beDPIaware = bool.Parse(attr.Value);
+					if (attrName == "w31ui") Program.beClassic = bool.Parse(attr.Value);
+					if (attrName == "lang")
+					{
+						if (!MUI.TrySetLangByName(attr.Value)) RevertFallbackLangFrom(attr.Value);
+					}
+				}
+				XmlNodeList Q_nodes = root.SelectNodes("QLaunch/Q");
+				foreach (XmlNode Q_node in Q_nodes)
+				{
+					int i = int.Parse(Q_node.Attributes["index"].Value);
+					if (i < 1 | i > 9) continue;
+					Q q = new Q();
+					foreach (XmlAttribute attr in Q_node.Attributes)
+					{
+						string attrName = attr.Name.ToLower();
+						if (attrName == "name") q.Name = attr.Value;
+						if (attrName == "exe") q.ExeToRun = attr.Value;
+						if (attrName == "args") q.Arguments = attr.Value;
+						if (attrName == "dir") q.WorkingDir = attr.Value;
+						if (attrName == "ti") q.UseTItoken = bool.Parse(attr.Value);
+					}
+					Qs[i - 1] = q;
 				}
 			}
+			catch (Exception)
+			{
+				return false;
+			}
+			return true;
 		}
 
-		public static void SaveSettings()
+		public static bool SaveSettings()
 		{
 			try
 			{
@@ -160,58 +171,69 @@ namespace SuperCMD
 					MUI.GetText("Common.SaveSettingsFailed") + "\n\n" + ex.Message,
 					MUI.GetText("Common.Error_title"),
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
 			}
+			return true;
 		}
 
 		static void ParseCmdLine(string[] args)
 		{
 			string ExeToRun = "", Arguments = "", WorkingDir = "";
 			string toRun = "", tokenProcessName = "";
-			int tokenPID = 0;
-			bool metTI = false, metSilent = false, metDebug = false, metShowWait = false;
-			IntPtr hLogTarget = IntPtr.Zero;
+			int tokenPID = -1;
+			bool metTI = false, metSilent = false, metShowWait = false;
+			bool metChangeToActiveSessionID = false;
 			// args[] can't process DirPath and ExeToRun containing '\'
 			// and that will influence the other argument too :(
 			// so I need to do it myself :/
 			string CmdLine = Environment.CommandLine;
 			int iToRun = CmdLine.ToLower().IndexOf("/run:");
-			if (iToRun == -1) return;
-			toRun = CmdLine.Substring(iToRun + 5).Trim();
-			// Process toRun
-			int iDQuote1, iDQuote2;
-			iDQuote1 = toRun.IndexOf("\"");
-			// If a pair of double quote is exist
-			if (iDQuote1 != -1)
+			if (iToRun != -1)
 			{
-				toRun = toRun.Substring(iDQuote1 + 1);
-				iDQuote2 = toRun.IndexOf("\"");
-				if (iDQuote2 != -1)
+				toRun = CmdLine.Substring(iToRun + 5).Trim();
+				// Process toRun
+				int iDQuote1, iDQuote2;
+				iDQuote1 = toRun.IndexOf("\"");
+				// If a pair of double quote is exist
+				if (iDQuote1 != -1)
 				{
-					// before 2nd double quote is ExeToRun, after is Arguments
-					ExeToRun = toRun.Substring(0, iDQuote2);
-					Arguments = toRun.Substring(iDQuote2 + 1);
+					toRun = toRun.Substring(iDQuote1 + 1);
+					iDQuote2 = toRun.IndexOf("\"");
+					if (iDQuote2 != -1)
+					{
+						// before 2nd double quote is ExeToRun, after is Arguments
+						ExeToRun = toRun.Substring(0, iDQuote2);
+						Arguments = toRun.Substring(iDQuote2 + 1);
+					}
 				}
-			}
-			else
-			{
-				// before 1st Space is ExeToRun, after is Arguments
-				int firstSpace = toRun.IndexOf(" ");
-				if (firstSpace == -1) { ExeToRun = toRun; }
 				else
 				{
-					ExeToRun = toRun.Substring(0, firstSpace);
-					Arguments = toRun.Substring(firstSpace + 1);
+					// before 1st Space is ExeToRun, after is Arguments
+					int firstSpace = toRun.IndexOf(" ");
+					if (firstSpace == -1) { ExeToRun = toRun; }
+					else
+					{
+						ExeToRun = toRun.Substring(0, firstSpace);
+						Arguments = toRun.Substring(firstSpace + 1);
+					}
 				}
 			}
 			// Process all optional arguments before toRun, '/' as separator
-			CmdLine = CmdLine.Substring(0, iToRun) + "/";
+			if (iToRun != -1) CmdLine = CmdLine.Substring(0, iToRun) + "/";
 			string cmdline = CmdLine.ToLower();
-			string tmp;
+			if (cmdline.Contains("/debug"))
+			{
+				DebugMode = true; Title += " Debug";
+			}
+			// Only /debug affects GUI mode, others are only for command line usage
+			// So if no '/run' then no need to go on
+			if (iToRun == -1) return;
 			if (cmdline.Contains("/ti")) metTI = true;
 			if (cmdline.Contains("/silent")) metSilent = true;
-			if (cmdline.Contains("/debug")) metDebug = true;
 			if (cmdline.Contains("/showwait")) metShowWait = true;
+			if (cmdline.Contains("/changetoactivesessionid")) metChangeToActiveSessionID = true;
 
+			string tmp;
 			int iWithTokenOf, iWithTokenOfPID, iSendLogTo, iDir, iNextSlash;
 			iWithTokenOf = cmdline.IndexOf("/withtokenof:");
 			if (iWithTokenOf != -1)
@@ -261,17 +283,19 @@ namespace SuperCMD
 				}
 			}
 			// Run...
+			SuperCore.ForceTokenUseActiveSessionID = metChangeToActiveSessionID;
 			if (metTI)
 			{
 				frmWait WaitUI = new frmWait();
 				if (metShowWait) WaitUI.ShowIfNeeded();
 				if (StartTiService())
 				{
-					SuperCore.RunWithTokenOf("winlogon.exe",
+					SuperCore.RunWithTokenOf("winlogon.exe", true,
 						Application.ExecutablePath,
 						"/WithTokenOf:TrustedInstaller.exe" +
+						" /ForceUseActiveSessionID" +
 						(metSilent ? " /Silent" : "") +
-						(metDebug ? " /Debug" : "") +
+						(DebugMode ? " /Debug" : "") +
 						" /Dir:\"" + WorkingDir + "\" " +
 						" /Run:\"" + ExeToRun + "\" " + Arguments);
 				}
@@ -281,39 +305,20 @@ namespace SuperCMD
 			{
 				if (tokenProcessName != "")
 				{
-					SuperCore.RunWithTokenOf(
-						tokenProcessName, ExeToRun, Arguments, WorkingDir);
+				    SuperCore.RunWithTokenOf(tokenProcessName, false,
+						ExeToRun, Arguments, WorkingDir);
 				}
 				else if (tokenPID > 0)
 				{
-					SuperCore.RunWithTokenOf(
-						tokenPID, ExeToRun, Arguments, WorkingDir);
+				    SuperCore.RunWithTokenOf(tokenPID, ExeToRun, Arguments, WorkingDir);
 				}
 				else
 				{
-					SuperCore.RunWithTokenOf(
-						"winlogon.exe", ExeToRun, Arguments, WorkingDir);
+					SuperCore.RunWithTokenOf("winlogon.exe", true,
+						ExeToRun, Arguments, WorkingDir);
 				}
 			}
-			// Complain and log...
-			if (LastComplain != "")
-			{
-				if (!metSilent & !metDebug)
-				{
-					MessageBox.Show(LastComplain, MUI.GetText("Common.Error_title"),
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-				if (hLogTarget != IntPtr.Zero)
-				{
-					Win32._SendMessage(LastComplain, hLogTarget);
-				}
-			}
-			if (metDebug)
-			{
-				MessageBox.Show(SuperCore.Log, "SuperCMD Log",
-					MessageBoxButtons.OK, (LastComplain != "") ?
-					MessageBoxIcon.Error : MessageBoxIcon.Information);
-			}
+			ComplainAndLog();
 			Environment.Exit((LastComplain != "") ? 1 : 0);
 		}
 
@@ -349,7 +354,7 @@ namespace SuperCMD
 			sfd.OverwritePrompt = true;
 			if (sfd.ShowDialog() == DialogResult.OK)
 			{
-				string args = "/ShowErr /ShowWait ";
+				string args = "/ShowWait ";
 				args += (q.UseTItoken ? "/TI " : "");
 				args += (q.WorkingDir != "") ?
 					"/Dir:\"" + q.WorkingDir + "\" " : "";
@@ -372,6 +377,51 @@ namespace SuperCMD
 						MUI.GetText("Common.Error_title"),	
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
+			}
+		}
+
+		public static void OfferToggleDebug()
+		{
+			if (Program.DebugMode)
+			{
+				if (MessageBox.Show("Exit debug mode?", "SuperCMD Debug",
+					MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+				{
+					Process.Start(Application.ExecutablePath);
+					Application.Exit();
+				}
+			}
+			else
+			{
+				if (MessageBox.Show("Enter debug mode?", "SuperCMD Debug",
+					MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+				{
+					Process.Start(Application.ExecutablePath, "/debug");
+					Application.Exit();
+				}
+			}
+		}
+
+		public static void ComplainAndLog()
+		{
+			if (DebugMode)
+			{
+				MessageBox.Show(SuperCore.Log, "SuperCMD Log",
+					MessageBoxButtons.OK, (LastComplain != "") ?
+					MessageBoxIcon.Error : MessageBoxIcon.Information);
+			}
+			else if (LastComplain != "")
+			{
+				if (hLogTarget != IntPtr.Zero)
+				{
+					Win32._SendMessage(LastComplain, hLogTarget);
+				}
+				else
+				{
+					MessageBox.Show(LastComplain, MUI.GetText("Common.Error_title"),
+					   MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+				LastComplain = "";
 			}
 		}
 

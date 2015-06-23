@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--For new line, type \n.-->
+<SuperCMD_Lang Name="zh-CN" DispName="简体中文">
+	<Common
+		BadOS="SuperCMD 只支持 Windows Vista 及之后的操作系统！"
+		APICallFailed="调用Win32 API时发生错误！\n\n%1"
+		CantGetPID="无法获取其PID：%1"
+		FileNotFound="这不是一个存在的文件！\n\n%1"
+		FileNotExe="这不是一个程序！\n\n%1"
+		FileType_LNK="Windows快捷方式"
+		FileType_EXE="可执行文件"
+		CreateLnkOK="已成功创建快捷方式！"
+		CreateLnkFailed="无法创建快捷方式！"
+		StartingTI="正在启动 TrustedInstaller 服务……\n\n请稍候……"
+		CantStartTI="无法启动 TrustedInstaller 服务！"
+		UseTIToken="启用 TrustedInstaller 令牌！"
+		AskToRestart="有些设置需要重启后才能生效。\n\n现在就重启SuperCMD吗？"
+		AskToResetQbtn="确定要重置速速启动栏吗？\n\n没有后悔药的哦。"
+		AskToNameQbtn="请先为这按钮起个名字。"
+		SaveSettingsFailed="无法储存程序设置！"
+		Error_title="出错了！"
+		OK_title="成功啦~"
+		SureBo_title="确定？"
+	/>
+	<ContextMenuIntegration
+		RunAsSYSTEM="以S&amp;YSTEM身份运行"
+		RunAsSYSTEM_TI="以S&amp;YSTEM身份运行(TI)"
+	/>
+	<frmMain
+		grpQLaunch="速速启动栏"
+		lblQRightClick="右击可编辑项目。"
+		lnkResetQ="重置"
+		grpOneKey="一键"
+		btnSelectAndRun="选择程序并以SYSTEM身份运行"
+		grpAdvanced="高级"
+		lblProgramPath="程序路径："
+		lblArguments="参数："
+		grpWorkingDir="工作目录："
+		rdoAutoWorkingDir="自动"
+		btnRunAdvanced="运行！"
+	/>
+	<frmQEditor
+		TITLE="编辑速速启动项目"
+		lblName="名称："
+		lblProgramPath="程序路径："
+		lblArguments="参数："
+		grpWorkingDir="工作目录："
+		rdoAutoWorkingDir="自动"
+		btnOK="确定"
+		btnCancel="取消"
+	/>
+	<mnuQEdit
+		cmiCopy="复制"
+		cmiCopyAsText="复制成文字"
+		cmiPaste="粘贴"
+		cmiClearAll="清空"
+		cmiCreateLnk="创建快捷方式"
+	/>
+	<frmConfig
+		grpCMIntegration="关联右键菜单"
+		chkRunAsSYSTEM="以SYSTEM身份运行"
+		chkRunAsSYSTEM_TI="以SYSTEM身份运行(TI)"
+		grpMisc="其它"
+		chkBeDPIaware="启用 DPI aware"
+		chkBeClassic="启用 Win3.1 界面风格"
+		grpLang="语言"
+		lblWarning="此程序只限个人使用。\n请勿将其用于非法用途！"
+		btnOK="确定"
+		btnCancel="取消"
+	/>
+</SuperCMD_Lang>

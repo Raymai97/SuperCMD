@@ -56,6 +56,7 @@
 			this.lblTitle.Size = new System.Drawing.Size(151, 21);
 			this.lblTitle.TabIndex = 0;
 			this.lblTitle.Text = "SuperCMD title here";
+			this.lblTitle.DoubleClick += new System.EventHandler(this.lblTitle_DoubleClick);
 			this.lblTitle.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frm_MouseDown);
 			this.lblTitle.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frm_MouseMove);
 			this.lblTitle.MouseUp += new System.Windows.Forms.MouseEventHandler(this.frm_MouseUp);
@@ -219,6 +220,7 @@
 			this.Name = "frmConfig";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmConfig_FormClosing);
 			this.Load += new System.EventHandler(this.frmConfig_Load);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frm_MouseDown);
 			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frm_MouseMove);

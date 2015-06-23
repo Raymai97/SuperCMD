@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--For new line, type \n.-->
+<SuperCMD_Lang Name="ja-JP" DispName="日本語">
+	<Common
+		BadOS="SuperCMDはWindows Vista以降のＯＳが必要です。"
+		APICallFailed="Win32 APIを呼び出しが失敗しました！\n\n%1"
+		CantGetPID="このPIDを取得できません：%1"
+		FileNotFound="これは既存のファイルではありません！\n\n%1"
+		FileNotExe="これはプログラムではありません！\n\n%1"
+		FileType_LNK="Windowsショートカット"
+		FileType_EXE="プログラム"
+		CreateLnkOK="ショートカットの作成しました！"
+		CreateLnkFailed="ショートカットの作成しませんでした。"
+		StartingTI="TrustedInstaller サービス\nを開始しています...\n\nお待ちください..."
+		CantStartTI="残念！TrustedInstaller サービスを開始できません！"
+		UseTIToken="TrustedInstaller のトークンを使用する！"
+		AskToRestart="変更結果はSuperCMDを再起動しなければ有効になりません。\n\n今すぐ再起動しますか？"
+		AskToResetQbtn="クイック起動をリセットますか？\n\n注意、元に戻すはできません！"
+		AskToNameQbtn="先にこのボタンの名前を付けてください！"
+		SaveSettingsFailed="プログラムのセッティングを保存ができませんでした！"
+		Error_title="残念！"
+		OK_title="成功しました！"
+		SureBo_title="本当に？"
+	/>
+	<ContextMenuIntegration
+		RunAsSYSTEM="S&amp;YSTEMとして実行"
+		RunAsSYSTEM_TI="S&amp;YSTEMとして実行(TI)"
+	/>
+	<frmMain
+		grpQLaunch="クイック起動"
+		lblQRightClick="右クリックと編集です。"
+		lnkResetQ="リセット"
+		grpOneKey="OneKey"
+		btnSelectAndRun="プログラムを選択とSYSTEMして実行"
+		grpAdvanced="詳細"
+		lblProgramPath="プログラムのパス："
+		lblArguments="引数："
+		grpWorkingDir="作業ディレクトリ："
+		rdoAutoWorkingDir="自動"
+		btnRunAdvanced="実行！"
+	/>
+	<frmQEditor
+		TITLE="クイック起動アイテムを編集"
+		lblName="名前："
+		lblProgramPath="プログラムのパス："
+		lblArguments="引数："
+		grpWorkingDir="作業ディレクトリ："
+		rdoAutoWorkingDir="自動"
+		btnOK="ＯＫ"
+		btnCancel="キャンセル"
+	/>
+	<mnuQEdit
+		cmiCopy="コピー"
+		cmiCopyAsText="テキストとしてコピー"
+		cmiPaste="貼り付け"
+		cmiClearAll="クリア"
+		cmiCreateLnk="ショートカットの作成"
+	/>
+	<frmConfig
+		grpCMIntegration="右クリックメニューに総合"
+		chkRunAsSYSTEM="SYSTEMとして実行"
+		chkRunAsSYSTEM_TI="SYSTEMとして実行(TI)"
+		grpMisc="その他"
+		chkBeDPIaware="DPI aware になる"
+		chkBeClassic="Win3.1 UI を使用する"
+		grpLang="言語"
+		lblWarning="このプログラムは個人使用のみです。\n悪用しないでください！"
+		btnOK="ＯＫ"
+		btnCancel="キャンセル"
+	/>
+</SuperCMD_Lang>

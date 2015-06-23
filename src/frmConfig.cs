@@ -67,6 +67,19 @@ namespace SuperCMD
 			cmbLang.SelectedIndex = LangIndex;
 		}
 
+		private void frmConfig_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			if (this.DialogResult != DialogResult.OK)
+			{
+				MUI.TrySetLangByName(initialLangName);
+				MUI.RefreshFrmLang();
+			}
+		}
+		private void lblTitle_DoubleClick(object sender, EventArgs e)
+		{
+			Program.OfferToggleDebug();
+		}
+
 		private void lnkHomepage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			System.Diagnostics.Process.Start("http://raymai97.github.io/SuperCMD");
@@ -105,8 +118,6 @@ namespace SuperCMD
 
 		private void btnCancel_Click(object sender, EventArgs e)
 		{
-			MUI.TrySetLangByName(initialLangName);
-			MUI.RefreshFrmLang();
 			this.Close();
 		}
 

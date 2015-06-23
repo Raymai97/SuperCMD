@@ -130,31 +130,27 @@ namespace SuperCMD
 			{
 				if (Program.StartTiService())
 				{
-					SuperCore.RunWithTokenOf(
-					   "winlogon.exe", Application.ExecutablePath,
-					   "/SendLogTo:" + hWnd.ToInt64() + " /Silent" +
+					SuperCore.RunWithTokenOf("winlogon.exe", true,
+						Application.ExecutablePath,
+					   (Program.DebugMode ? "/Debug" : "") + 
+					   " /SendLogTo:" + hWnd.ToInt64() +
 					   " /WithTokenOf:TrustedInstaller.exe" +
+					   " /ChangeToActiveSessionID" +
 					   " /Dir:\"" + q.WorkingDir + "\"" +
 					   " /Run:\"" + q.ExeToRun + "\" " + q.Arguments);
 				}
 			}
 			else
 			{
-				SuperCore.RunWithTokenOf(
-					"winlogon.exe", q.ExeToRun, q.Arguments, q.WorkingDir);
+				SuperCore.RunWithTokenOf("winlogon.exe", true,
+					q.ExeToRun, q.Arguments, q.WorkingDir);
 			}
 		}
 
 		private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
 			WaitUI.Hide();
-			if (Program.LastComplain != "")
-			{
-				MessageBox.Show(
-					Program.LastComplain, MUI.GetText("Common.Error_title"),
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Program.LastComplain = "";
-			}
+			Program.ComplainAndLog();
 			SuperCore.ClearLog();
 		}
 
@@ -216,6 +212,7 @@ namespace SuperCMD
 				MessageBoxDefaultButton.Button2	) == DialogResult.Yes)
 			{
 				Program.LoadSettings(Properties.Resources.defaultSettings);
+				RefreshQbtn();
 			}
 		}
 
