@@ -1,0 +1,44 @@
+------ SuperCMD v2.1 Command Line Usage ------
+
+SuperCMD.exe [Options] /Run:[Program path and arguments]
+
+Options:
+/TI		: Use TrustedInstaller token
+/ShowWait	: Show "Starting TrustedInstaller" screen
+/Dir:[DirPath]	: Specify target's working directory
+/Silent		: Don't show error message
+/Debug		: Enable Debug mode which always show Log
+
+------ Example usage ------
+
+Run cmd.exe as SYSTEM user:
+SuperCMD.exe /Run:cmd.exe /k echo. Hello SuperCMD!
+
+Run cmd.exe as SYSTEM user with TrustedInstaller token:
+SuperCMD.exe /TI /Run:cmd.exe /k echo. Hello SuperCMD!
+
+------ Notes ------
+
+'/Run:' must always behind any other argument!
+
+Everything after '/Run:' should be transferred losslessly.
+SuperCMD can handle insane arguments like this:
+SuperCMD.exe /Run:cmd.exe /k echo."! // complicated "text"" here \\ !"
+
+If you're in Safe Mode, you might face error 1314. If so, log off and log on again would fix it. It's the fault of Windows, not SuperCMD.
+
+------ Internal use options (Advanced user only) ------
+
+/UseTokenOf:[Process Name] *
+Specify the process's name to steal token from.
+Unreliable if there are multiple same name processes running.
+Beware, there will be many 'winlogon.exe' running if multiple users have logged on.
+
+/UseTokenOfPID:[Process ID] *
+Specify the process's ID (PID) to steal token from.
+
+/ChangeToActiveSessionID
+Change the session ID of token to active session ID, so the target program will be visible on current user desktop.
+Must running as SYSTEM first!
+
+* If the process is with different session ID, and you're in Safe Mode, you MIGHT not see your program running on your desktop, unless you specify /ChangeToActiveSessionID.
